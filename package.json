@@ -12,5 +12,16 @@
     "ice"
   ],
   "author": "Raymond Hammarling",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "grunt": "~0.4.4",
+    "grunt-contrib-coffee": "~0.10.1",
+    "grunt-coffeelint": "0.0.10",
+    "grunt-contrib-watch": "~0.6.1",
+    "chai": "~1.9.1",
+    "grunt-mocha-test": "~0.10.2",
+    "load-grunt-tasks": "~0.4.0"
+  },
+  "dependencies": {
+  }
 }
