@@ -14,7 +14,7 @@ spotifyUrls = [
 
 { spotify, target } = config
 
-icecastServer = new IcecastServer target.address, target.password
+icecastServer = new IcecastServer target
 
 Spotify.login spotify.user, spotify.password, (err, spotify) ->
 	return console.error err.stack if err?
