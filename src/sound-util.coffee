@@ -1,0 +1,1 @@
+exports.bitrate = (format) -> format.sampleRate * format.bitDepth * format.channels
