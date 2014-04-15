@@ -28,7 +28,6 @@
     "spotify-web": "^1.1.1",
     "ogg": "^1.1.1",
     "lame": "^1.0.3",
-    "vorbis": "raymond-h/node-vorbis",
     "request": "^2.34.0"
   }
 }
