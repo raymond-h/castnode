@@ -5,7 +5,7 @@ _.str = require 'underscore.string'
 
 lame = require 'lame'
 Spotify = require 'spotify-web'
-irc = require 'irc'
+IrcClient = require 'node-irc-client'
 
 config = require '../config.json'
 
@@ -18,13 +18,17 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 
 	console.log "Logged in to Spotify..."
 
-	ircClient =
-		new irc.Client 'irc.esper.net', 'Jukeyboxie',
-			channels: [ '#kellyirc' ]
+	ircClient = new IrcClient
+		server: 'irc.esper.net'
+		nick: 'Jukeyboxie'
+		verbose: no
+		channels: [ '#kellyirc' ]
 
-	ircClient.on 'message', (nick, channel, text) ->
-		if (match = /!play (spotify:track:[\w\d]+)/.exec text)?
+	ircClient.on 'msg', (from, to, text) ->
+		channel = to
+		if (match = /^!play\s+(?:https?:\/\/(?:open|play).spotify.com\/track\/|spotify:track:)([\w\d]+)$/.exec text)?
 			[full, uri] = match
+			uri = "spotify:track:#{uri}"
 
 			spotify.get uri, (err, track) ->
 				return console.error err.stack if err?
@@ -34,7 +38,7 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 					artist: track.artist.map((a) -> a.name)
 					album: track.album.name
 
-				ircClient.say channel, "Now playing: #{metadata.title} by #{_.str.toSentence metadata.artist}"
+				ircClient.msg channel, "Now playing: #{metadata.title} by #{_.str.toSentence metadata.artist}"
 				console.log "Playing", metadata
 
 				lameDecoder = new lame.Decoder
@@ -45,4 +49,4 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 				track.play().pipe lameDecoder
 
 		else if (match = /!icecast-url/.exec text)?
-			ircClient.say channel, "Listen in at #{target.displayAddress} now!"
+			ircClient.msg channel, "Listen in at #{target.displayAddress} now!"

@@ -31,6 +31,7 @@
     "request": "^2.34.0",
     "irc": "^0.3.6",
     "q": "^1.0.1",
-    "underscore.string": "^2.3.3"
+    "underscore.string": "^2.3.3",
+    "node-irc-client": "0.0.1"
   }
 }
