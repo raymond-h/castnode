@@ -23,5 +23,12 @@
     "load-grunt-tasks": "~0.4.0"
   },
   "dependencies": {
+    "underscore": "^1.6.0",
+    "throttle": "^1.0.3",
+    "spotify-web": "^1.1.1",
+    "ogg": "^1.1.1",
+    "lame": "^1.0.3",
+    "vorbis": "raymond-h/node-vorbis",
+    "request": "^2.34.0"
   }
 }
