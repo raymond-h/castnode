@@ -9,6 +9,7 @@ config = require '../config.json'
 
 spotifyUrls = [
 	'spotify:track:4C1b6JHElDfsDD1mY1gsxS'
+	'spotify:track:6WP64G01l6k2fdomEl5Vrs'
 ]
 
 { spotify, target } = config
