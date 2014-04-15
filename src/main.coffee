@@ -19,7 +19,7 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 
 	ircClient =
 		new irc.Client 'irc.esper.net', 'Jukeyboxie',
-			channels: [ '#warcan' ]
+			channels: [ '#kellyirc' ]
 
 	ircClient.on 'message', (nick, channel, text) ->
 		if (match = /!play (spotify:track:[\w\d]+)/.exec text)?
@@ -30,18 +30,16 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 
 				metadata =
 					title: track.name
-					artist: track.artist.map((a) -> a.name).join ', '
+					artist: track.artist.map((a) -> a.name)
 					album: track.album.name
 
-				ircClient.say channel, "Now playing: #{metadata.title} by #{metadata.artist}"
+				ircClient.say channel, "Now playing: #{metadata.title} by #{metadata.artist.join ', '}"
 				console.log "Playing", metadata
 
 				lameDecoder = new lame.Decoder
 
 				lameDecoder.on 'format', (inFormat) ->
-					icecastServer.stream metadata, inFormat, lameDecoder, ->
-						icecastServer.end()
-						spotify.disconnect()
+					icecastServer.stream metadata, inFormat, lameDecoder
 
 				track.play().pipe lameDecoder
 

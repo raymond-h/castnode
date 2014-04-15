@@ -35,7 +35,8 @@ class exports.IcecastServer
 		vorbisEncoder = new vorbis.Encoder outFormat
 
 		for tag, cmt of metadata
-			vorbisEncoder.addComment tag, cmt
+			cmt = [].concat cmt
+			vorbisEncoder.addComment tag, c for c in cmt
 
 		source
 		.pipe formatter
