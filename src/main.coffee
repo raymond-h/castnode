@@ -8,11 +8,6 @@ irc = require 'irc'
 
 config = require '../config.json'
 
-spotifyUrls = [
-	'spotify:track:4C1b6JHElDfsDD1mY1gsxS'
-	'spotify:track:6WP64G01l6k2fdomEl5Vrs'
-]
-
 { spotify, target } = config
 
 icecastServer = new IcecastServer target
@@ -27,7 +22,7 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 			channels: [ '#warcan' ]
 
 	ircClient.on 'message', (nick, channel, text) ->
-		if (match = /!play (.+)/.exec text)?
+		if (match = /!play (spotify:track:[\w\d]+)/.exec text)?
 			[full, uri] = match
 
 			spotify.get uri, (err, track) ->
@@ -39,6 +34,7 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 					album: track.album.name
 
 				ircClient.say channel, "Now playing: #{metadata.title} by #{metadata.artist}"
+				console.log "Playing", metadata
 
 				lameDecoder = new lame.Decoder
 
@@ -48,3 +44,6 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 						spotify.disconnect()
 
 				track.play().pipe lameDecoder
+
+		else if (match = /!icecast-url/.exec text)?
+			ircClient.say channel, "Listen in at #{target.displayAddress} now!"
