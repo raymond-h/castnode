@@ -10,9 +10,9 @@ Throttle = require 'throttle'
 pcmUtils = require 'pcm-utils'
 
 class exports.IcecastServer
-	constructor: (@hostPath, @password) ->
-		@req = request.put @hostPath,
-			auth: user: 'source', pass: @password
+	constructor: (@options) ->
+		@req = request.put @options.address,
+			auth: user: 'source', pass: @options.password
 			headers: 'content-type': 'application/ogg'
 
 		@out = new stream.PassThrough
