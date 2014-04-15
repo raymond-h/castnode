@@ -1,10 +1,13 @@
-{ bitrate } = require './sound-util'
+{ bitrate, pcmFormatConstant } = require './sound-util'
+
+stream = require 'stream'
 
 request = require 'request'
 
 ogg = require 'ogg'
 vorbis = require 'vorbis'
 Throttle = require 'throttle'
+pcmUtils = require 'pcm-utils'
 
 class exports.IcecastServer
 	constructor: (@hostPath, @password) ->
@@ -23,16 +26,20 @@ class exports.IcecastServer
 			channels: 2
 			float: true
 
-		console.log "Got in format", inFormat
+		formatter = new pcmUtils.Formatter(
+			pcmFormatConstant inFormat
+			pcmFormatConstant outFormat
+		)
 
 		oggEncoder = new ogg.Encoder
-		vorbisEncoder = new vorbis.Encoder inFormat
+		vorbisEncoder = new vorbis.Encoder outFormat
 
 		for tag, cmt of metadata
 			vorbisEncoder.addComment tag, cmt
 
 		source
-		.pipe new Throttle (bitrate inFormat) / 8
+		.pipe formatter
+		.pipe new Throttle (bitrate outFormat) / 8
 		.pipe vorbisEncoder
 		.pipe oggEncoder.stream()
 
@@ -40,12 +47,6 @@ class exports.IcecastServer
 			callback? a...
 
 		oggEncoder.pipe @out, end: false
-
-		setTimeout ->
-			oggEncoder.unpipe @out
-			((a...) -> callback? a...)()
-
-		, 6000
 
 		this
 
