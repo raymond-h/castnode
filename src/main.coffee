@@ -4,6 +4,7 @@ _ = require 'underscore'
 
 lame = require 'lame'
 Spotify = require 'spotify-web'
+irc = require 'irc'
 
 config = require '../config.json'
 
@@ -21,21 +22,29 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 
 	console.log "Logged in to Spotify..."
 
-	spotify.get spotifyUrls[0], (err, track) ->
-		return console.error err.stack if err?
+	ircClient =
+		new irc.Client 'irc.esper.net', 'Jukeyboxie',
+			channels: [ '#warcan' ]
 
-		metadata =
-			title: track.name
-			artist: track.artist.map((a) -> a.name).join ', '
-			album: track.album.name
+	ircClient.on 'message', (nick, channel, text) ->
+		if (match = /!play (.+)/.exec text)?
+			[full, uri] = match
 
-		console.log "Now playing: #{metadata.title} by #{metadata.artist}"
+			spotify.get uri, (err, track) ->
+				return console.error err.stack if err?
 
-		lameDecoder = new lame.Decoder
+				metadata =
+					title: track.name
+					artist: track.artist.map((a) -> a.name).join ', '
+					album: track.album.name
 
-		lameDecoder.on 'format', (inFormat) ->
-			icecastServer.stream metadata, inFormat, lameDecoder, ->
-				icecastServer.end()
-				spotify.disconnect()
+				ircClient.say channel, "Now playing: #{metadata.title} by #{metadata.artist}"
 
-		track.play().pipe lameDecoder
+				lameDecoder = new lame.Decoder
+
+				lameDecoder.on 'format', (inFormat) ->
+					icecastServer.stream metadata, inFormat, lameDecoder, ->
+						icecastServer.end()
+						spotify.disconnect()
+
+				track.play().pipe lameDecoder
