@@ -1,6 +1,7 @@
 { IcecastServer } = require './icecast-server'
 
 _ = require 'underscore'
+_.str = require 'underscore.string'
 
 lame = require 'lame'
 Spotify = require 'spotify-web'
@@ -33,7 +34,7 @@ Spotify.login spotify.user, spotify.password, (err, spotify) ->
 					artist: track.artist.map((a) -> a.name)
 					album: track.album.name
 
-				ircClient.say channel, "Now playing: #{metadata.title} by #{metadata.artist.join ', '}"
+				ircClient.say channel, "Now playing: #{metadata.title} by #{_.str.toSentence metadata.artist}"
 				console.log "Playing", metadata
 
 				lameDecoder = new lame.Decoder
